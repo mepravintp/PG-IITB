@@ -1,0 +1,14 @@
+# Cricket Object Detection - Requirements
+
+# Core scientific computing
+numpy>=1.19.0
+
+# Image processing
+Pillow>=8.0.0
+
+# Machine learning (for comparison/validation)
+scikit-learn>=0.24.0
+
+# Note: The core implementation uses custom classifiers (SimpleLogisticRegression, 
+# RandomForestClassifier) implemented from scratch without sklearn dependencies.
+# sklearn is optional and can be used for comparison/validation.
