@@ -196,7 +196,10 @@ class GridClassifier:
             'feature_mean': self.feature_mean,
             'feature_std': self.feature_std,
             'n_classes': self.n_classes,
-            'is_fitted': self.is_fitted
+            'is_fitted': self.is_fitted,
+            'learning_rate': self.learning_rate,
+            'n_iterations': self.n_iterations,
+            'regularization': self.regularization
         }
         with open(filepath, 'wb') as f:
             pickle.dump(model_data, f)
@@ -216,7 +219,12 @@ class GridClassifier:
         with open(filepath, 'rb') as f:
             model_data = pickle.load(f)
         
-        classifier = cls(n_classes=model_data['n_classes'])
+        classifier = cls(
+            n_classes=model_data['n_classes'],
+            learning_rate=model_data.get('learning_rate', 0.01),
+            n_iterations=model_data.get('n_iterations', 1000),
+            regularization=model_data.get('regularization', 0.01)
+        )
         classifier.weights = model_data['weights']
         classifier.bias = model_data['bias']
         classifier.feature_mean = model_data['feature_mean']

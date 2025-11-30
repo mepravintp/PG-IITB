@@ -42,15 +42,16 @@ def compute_gradients(gray_image: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     # Pad image
     padded = np.pad(gray_image.astype(np.float32), ((1, 1), (1, 1)), mode='edge')
     
-    # Compute gradients
-    gx = np.zeros_like(gray_image, dtype=np.float32)
-    gy = np.zeros_like(gray_image, dtype=np.float32)
+    # Compute gradients using vectorized convolution
+    h, w = gray_image.shape
+    gx = np.zeros((h, w), dtype=np.float32)
+    gy = np.zeros((h, w), dtype=np.float32)
     
-    for i in range(gray_image.shape[0]):
-        for j in range(gray_image.shape[1]):
-            patch = padded[i:i+3, j:j+3]
-            gx[i, j] = np.sum(patch * sobel_x)
-            gy[i, j] = np.sum(patch * sobel_y)
+    # Vectorized convolution using slicing
+    for di in range(3):
+        for dj in range(3):
+            gx += padded[di:di+h, dj:dj+w] * sobel_x[di, dj]
+            gy += padded[di:di+h, dj:dj+w] * sobel_y[di, dj]
     
     magnitude = np.sqrt(gx**2 + gy**2)
     direction = np.arctan2(gy, gx)
@@ -76,12 +77,9 @@ def extract_hog_features(cell: np.ndarray, num_bins: int = 9) -> np.ndarray:
     direction_deg = np.degrees(direction) % 180
     bin_width = 180 / num_bins
     
-    # Create histogram
-    histogram = np.zeros(num_bins)
-    for i in range(magnitude.shape[0]):
-        for j in range(magnitude.shape[1]):
-            bin_idx = int(direction_deg[i, j] / bin_width) % num_bins
-            histogram[bin_idx] += magnitude[i, j]
+    # Create histogram using vectorized operations
+    bin_indices = (direction_deg / bin_width).astype(int) % num_bins
+    histogram = np.bincount(bin_indices.ravel(), weights=magnitude.ravel(), minlength=num_bins).astype(np.float64)
     
     # Normalize
     norm = np.linalg.norm(histogram) + 1e-6
