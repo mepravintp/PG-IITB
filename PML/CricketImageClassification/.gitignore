@@ -1,0 +1,46 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environment
+venv/
+env/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large data files (keep .gitkeep files)
+data/train/*/*.jpg
+data/train/*/*.jpeg
+data/train/*/*.png
+data/train/*/*.bmp
+data/train/*/*.tiff
+data/test/*/*.jpg
+data/test/*/*.jpeg
+data/test/*/*.png
+data/test/*/*.bmp
+data/test/*/*.tiff
+
+# Trained model files (keep directory)
+models/*.pkl
+
+# Output files (keep directory)
+outputs/*.csv
