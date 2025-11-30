@@ -333,8 +333,8 @@ def compute_shape_features(image: np.ndarray) -> np.ndarray:
     n11 = mu11 / (n**2 + 1e-6)
     n30 = mu30 / (n**3 + 1e-6)
     n03 = mu03 / (n**3 + 1e-6)
-    n21 = mu21 / (n**2.5 + 1e-6)
-    n12 = mu12 / (n**2.5 + 1e-6)
+    n21 = mu21 / (n**(5/2) + 1e-6)
+    n12 = mu12 / (n**(5/2) + 1e-6)
     
     # Hu moments (first 4, which are most useful)
     hu1 = n20 + n02

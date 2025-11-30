@@ -173,7 +173,9 @@ def visualize_annotation(image: np.ndarray, labels: List[int],
     result = np.array(img)
     
     if output_path:
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        output_dir = os.path.dirname(output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
         img.save(output_path)
         print(f"Visualization saved to {output_path}")
     

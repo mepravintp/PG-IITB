@@ -162,7 +162,9 @@ def preprocess_image(image_path: str, output_path: Optional[str] = None) -> Opti
         
         # Save if output path provided
         if output_path:
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            output_dir = os.path.dirname(output_path)
+            if output_dir:
+                os.makedirs(output_dir, exist_ok=True)
             image.save(output_path, quality=95)
         
         return image
