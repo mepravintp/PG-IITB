@@ -3,6 +3,9 @@
 ## Overview
 This project implements a grid-based object detection system for cricket images. It detects cricket bats, balls, and stumps in images using hand-crafted features and traditional machine learning classifiers.
 
+## Project Task List
+See [TASKS.csv](TASKS.csv) for the editable Excel-like team task table.
+
 ## Project Structure
 ```
 cricket_object_detection/
@@ -94,7 +97,7 @@ ImageFileName, TrainOrTest, c01, c02, ..., c64
 Where each cell value is 0, 1, 2, or 3 indicating the detected object class.
 
 ## Team
-Team Name: PravinTeam
+Team Name: TBD
 
 ## Requirements
 - Python 3.7+
