@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 from PIL import Image
 import numpy as np
 
-from .utils import (
+from utils import (
     GRID_ROWS, GRID_COLS, TOTAL_CELLS, IMAGE_WIDTH, IMAGE_HEIGHT,
     CELL_WIDTH, CELL_HEIGHT, CLASS_LABELS, LABEL_TO_CLASS,
     get_grid_cell_bounds, save_json, load_json
@@ -130,7 +130,7 @@ def annotation_summary(annotations: List[Dict]) -> Dict:
 
 
 def visualize_annotation(image: np.ndarray, labels: List[int], 
-                          output_path: Optional[str] = None) -> np.ndarray:
+                          output_path: Optional[str] = None, highlight_mask: Optional[List[int]] = None) -> np.ndarray:
     """
     Visualize annotations on an image by drawing grid and labels.
     
@@ -160,15 +160,18 @@ def visualize_annotation(image: np.ndarray, labels: List[int],
     for i, label in enumerate(labels):
         cell_idx = i + 1
         x1, y1, x2, y2 = get_grid_cell_bounds(cell_idx)
-        
         color = colors[label]
-        
         # Draw rectangle
         draw.rectangle([x1, y1, x2, y2], outline=color, width=2)
-        
         # Draw label text
         text = str(label)
         draw.text((x1 + 5, y1 + 5), text, fill=color)
+        # Highlight cell if requested
+        if highlight_mask is not None and i < len(highlight_mask) and highlight_mask[i]:
+            # Draw a thicker yellow border for highlight
+            highlight_color = (255, 255, 0)  # Yellow
+            for w in range(4, 8):
+                draw.rectangle([x1, y1, x2, y2], outline=highlight_color, width=w)
     
     result = np.array(img)
     

@@ -9,13 +9,13 @@ import numpy as np
 from typing import Dict, List, Tuple, Any, Optional
 from PIL import Image
 
-from .utils import (
+from utils import (
     TOTAL_CELLS, CLASS_LABELS, save_model, load_model,
     get_image_files
 )
-from .preprocess import image_to_numpy, preprocess_image
-from .features import extract_grid_features, extract_cell_features
-from .annotate import load_annotations_batch
+from preprocess import image_to_numpy, preprocess_image
+from features import extract_grid_features, extract_cell_features
+from annotate import load_annotations_batch
 
 
 def load_training_data(image_dir: str, annotations_file: str) -> Tuple[List[np.ndarray], List[List[int]]]:

@@ -485,7 +485,7 @@ def extract_grid_features(image: np.ndarray) -> List[np.ndarray]:
     Returns:
         List of 64 feature vectors, one per grid cell
     """
-    from .preprocess import split_image_to_grid
+    from preprocess import split_image_to_grid
     
     cells = split_image_to_grid(image)
     features = []
