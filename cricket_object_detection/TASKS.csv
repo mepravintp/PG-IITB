@@ -6,4 +6,4 @@ Model Training,"Train RandomForest, SVM, LogisticRegression; evaluate per-cell/c
 Model Tuning,"Hyperparameter search, cross-validation, retrain best model",,Not Started
 Output Generation,"Generate CSVs, save model as model_<teamname>.pkl",,Not Started
 Documentation,"Write README, code usage, package artifacts",,Not Started
-Presentation & Video,"Prepare slides and demo video",,Not Started
+Presentation & Video,Prepare slides and demo video,,Not Started
