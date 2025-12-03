@@ -1,6 +1,6 @@
 Task,Description,Assigned To,Status
 Dataset Collection,"Gather ≥300 cricket images, ensure 4:3 aspect ratio, resize to 800x600, organize into train/test",ratish,Not Started
-Annotation,"Divide images into 8×8 grid, label each cell (0/1/2/3), create CSV",Yogesh,Not Started
+Annotation,"Divide images into 8×8 grid, label each cell (0/1/2/3), create CSV",Yogesh,In Progress
 Feature Extraction,"Implement scripts for color hist, HSV, HOG, LBP, edge density, moments","Yugal,Pravin ",Not Started
 Model Training,"Train RandomForest, SVM, LogisticRegression; evaluate per-cell/class",,Not Started
 Model Tuning,"Hyperparameter search, cross-validation, retrain best model",,Not Started
