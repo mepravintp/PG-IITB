@@ -9,7 +9,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Any, Optional
 from PIL import Image
 
-from utils import (
+from src.utils import (
     TOTAL_CELLS, CLASS_LABELS, save_model, load_model,
     get_image_files
 )

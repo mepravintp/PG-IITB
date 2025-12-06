@@ -7,7 +7,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 from PIL import Image
 
-from utils import (
+from src.utils import (
     TOTAL_CELLS, CLASS_LABELS, load_model, get_image_files,
     create_csv_header, create_csv_row
 )
