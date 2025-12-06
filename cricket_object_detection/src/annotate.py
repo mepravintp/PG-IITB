@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 from PIL import Image
 import numpy as np
 
-from utils import (
+from src.utils import (
     GRID_ROWS, GRID_COLS, TOTAL_CELLS, IMAGE_WIDTH, IMAGE_HEIGHT,
     CELL_WIDTH, CELL_HEIGHT, CLASS_LABELS, LABEL_TO_CLASS,
     get_grid_cell_bounds, save_json, load_json
