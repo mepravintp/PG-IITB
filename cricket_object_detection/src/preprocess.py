@@ -6,11 +6,10 @@ import os
 import numpy as np
 from PIL import Image
 from typing import Tuple, Optional
+import src.utils
 
-try:
-    from .utils import IMAGE_WIDTH, IMAGE_HEIGHT
-except ImportError:
-    from utils import IMAGE_WIDTH, IMAGE_HEIGHT
+from src.utils import IMAGE_WIDTH, IMAGE_HEIGHT
+
 
 
 def validate_image_size(image: Image.Image) -> bool:
@@ -253,7 +252,7 @@ def extract_grid_cell(image: np.ndarray, cell_index: int) -> np.ndarray:
     Returns:
         Numpy array of shape (75, 100, 3) for the cell
     """
-    from utils import get_grid_cell_bounds
+    from src.utils import get_grid_cell_bounds
     
     x_start, y_start, x_end, y_end = get_grid_cell_bounds(cell_index)
     return image[y_start:y_end, x_start:x_end]
@@ -270,7 +269,7 @@ def split_image_to_grid(image: np.ndarray) -> list:
         List of 64 numpy arrays, each of shape (75, 100, 3)
     """
     try:
-        from .utils import TOTAL_CELLS
+        from src.utils import TOTAL_CELLS
     except ImportError:
         from utils import TOTAL_CELLS
     
