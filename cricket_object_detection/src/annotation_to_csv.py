@@ -1,18 +1,26 @@
+
 import os
 import csv
 from pathlib import Path
+import itertools
 
 def annotation_to_csv(input_dir, annotation_dir, output_csv):
     input_dir = Path(input_dir)
     annotation_dir = Path(annotation_dir)
     rows = []
 
-    for img_file in input_dir.glob('*.jpg'):
+    for img_file in itertools.chain(input_dir.glob('*.jpg'), input_dir.glob('*.png')):
         img_name = img_file.name
         ann_file = annotation_dir / f"{img_file.stem}.txt"
+        # Try with 'annotated_' prefix if not found
         if not ann_file.exists():
             print(f"Annotation file not found for image: {img_name}")
             continue
+            # ann_file_alt = annotation_dir / f"annotated_{img_file.stem}.txt"
+            # if ann_file_alt.exists():
+            #     ann_file = ann_file_alt
+            # else:
+                
         with open(ann_file, 'r') as f:
             for line in f:
                 line = line.strip()
@@ -38,7 +46,7 @@ def annotation_to_csv(input_dir, annotation_dir, output_csv):
 
 if __name__ == "__main__":
     # Example usage
-    input_dir = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\data\\train\\Stumps"
-    annotation_dir = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\data\\annotations\\Stumps"
-    output_csv = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\outputs\\annotations_cells.csv"
+    input_dir = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\data\\train_modified"
+    annotation_dir = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\data\\annotations_new"
+    output_csv = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\outputs\\annotations_cells_modified.csv"
     annotation_to_csv(input_dir, annotation_dir, output_csv)

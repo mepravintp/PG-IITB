@@ -1,3 +1,5 @@
+
+
 import os
 import numpy as np
 import pandas as pd
@@ -9,12 +11,12 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 # --- CONFIGURATION ---
-image_dir = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\data\\train\\Stumps"  # Change as needed
-annotation_csv = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\outputs\\annotations_cells.csv"
+image_dir = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\data\\train_modified\\"  # Change as needed
+annotation_csv = r"C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\outputs\\annotations_cells_modified.csv"
 cell_height, cell_width = 75, 100  # For 800x600 images, 8x8 grid
 
 # --- STEP 1: Load Annotations ---
-df = pd.read_csv(annotation_csv)
+df = pd.read_csv(annotation_csv,encoding='latin1')
 
 # --- STEP 2: Split Images & Extract Cell Features ---
 def extract_cell_features(cell_img):
@@ -24,20 +26,29 @@ def extract_cell_features(cell_img):
     std = gray.std()
     return np.concatenate([hog_feat, [mean, std]])
 
-
+import time
 # Prepare to save features and labels
 feature_rows = []
 img_files = df['image_name'].unique()
+# Sample 100 images randomly
+np.random.seed(42)
+t1=time.time()
+img_files_sample = np.random.choice(img_files, size=min(150, len(img_files)), replace=False)
+t2=time.time()
+print("Time taken to sample images:", t2-t1)
 
-for img_name in img_files:
+t1=time.time()
+for img_name in img_files_sample:
     img_path = os.path.join(image_dir, img_name)
     if not os.path.exists(img_path):
         continue
     img = io.imread(img_path)
     # Ensure image is 800x600
     if img.shape[0] != 600 or img.shape[1] != 800:
+        print(f"Skipping image with incorrect size: {img_name}")
         continue
     # Get cell labels for this image
+   # print("Processing image:", img_name)
     cell_labels = df[df['image_name'] == img_name].sort_values(['cell_row', 'cell_column'])[['cell_row', 'cell_column', 'label']].values
     # Split image into cells
     idx = 0
@@ -60,10 +71,15 @@ for img_name in img_files:
             feature_rows.append(row)
             idx += 1
 
-# Save all features to CSV
+print("Time taken to extract features:", time.time()-t1)
+#Save all features to CSV
 features_df = pd.DataFrame(feature_rows)
-features_df.to_csv(r"C:\Users\pravi\PG IITB\cricket_object_detection\outputs\cell_features.csv", index=False)
+#features_df.to_csv(r"C:\Users\pravi\PG IITB\cricket_object_detection\outputs\cell_features.csv", index=False)
 print("Saved cell features to outputs/cell_features.csv")
+
+
+t1=time.time()
+print("Start Modelling")
 
 # Prepare X, y for training
 X = features_df[[col for col in features_df.columns if col.startswith('feat_')]].values
@@ -72,6 +88,9 @@ y = features_df['label'].values
 # --- STEP 3: Train/Test Split ---
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+print("Time taken to split data:", time.time()-t1)
+
+t1=time.time()
 # --- STEP 4: Train Model ---
 
 # --- STEP 4: Train Models ---
@@ -109,60 +128,88 @@ class_names = ['no_object', 'ball', 'bat', 'stump']
 rf_precision, rf_recall, rf_f1, rf_acc = get_metrics(y_test, rf_pred, labels)
 knn_precision, knn_recall, knn_f1, knn_acc = get_metrics(y_test, knn_pred, labels)
 
-# Plot metrics for comparison
-import matplotlib.pyplot as plt
-import numpy as np
-bar_width = 0.35
-index = np.arange(len(class_names))
+print("Random Forest Classification Report:")
+print(classification_report(y_test, rf_pred, target_names=class_names))
+print("KNN Classification Report:")
+print(classification_report(y_test, knn_pred, target_names=class_names))
 
-# Precision Comparison
-plt.figure(figsize=(6,4))
-plt.bar(['Random Forest', 'KNN'], [rf_acc, knn_acc], color=['blue', 'orange'])
-plt.ylabel('Accuracy')
-plt.title('Overall Accuracy Comparison')
-plt.show()
+print("Time taken for modelling and evaluation:", time.time()-t1)
 
-# --- STEP 6: Predict & Visualize on a Sample Image ---
+# Visualize predictions for a few sample images (e.g., 3 images) using Random Forest
+# num_vis = min(3, len(img_files_sample))
+# fig, axes = plt.subplots(1, num_vis, figsize=(18, 6))
+# if num_vis == 1:
+#     axes = [axes]
+# color_map = {0:'gray', 1:'red', 2:'green', 3:'blue'}
 
-# Predict & Visualize on 10 images as subplots
-num_images = min(10, len(img_files))
-fig, axes = plt.subplots(4, 5, figsize=(25, 10))
-axes = axes.flatten()
-color_map = {0:'gray', 1:'red', 2:'green', 3:'blue'}
+# for idx, img_name in enumerate(img_files_sample[:num_vis]):
+#     img_path = os.path.join(image_dir, img_name)
+#     img = io.imread(img_path)
+#     pred_labels = []
+#     for r in range(8):
+#         for c in range(8):
+#             y1, y2 = r*cell_height, (r+1)*cell_height
+#             x1, x2 = c*cell_width, (c+1)*cell_width
+#             cell_img = img[y1:y2, x1:x2]
+#             features = extract_cell_features(cell_img)
+#             pred = rf_clf.predict([features])[0]
+#             pred_labels.append(pred)
+#     ax = axes[idx]
+#     ax.imshow(img)
+#     for r in range(8):
+#         for c in range(8):
+#             y1, y2 = r*cell_height, (r+1)*cell_height
+#             x1, x2 = c*cell_width, (c+1)*cell_width
+#             label = pred_labels[r*8 + c]
+#             rect = plt.Rectangle((x1, y1), cell_width, cell_height, fill=False, edgecolor=color_map[label], linewidth=2)
+#             ax.add_patch(rect)
+#     ax.set_title(f'{img_name}')
+#     ax.axis('off')
+# plt.suptitle(f'Predicted cell labels for {num_vis} sample images (Random Forest)')
+# plt.tight_layout()
+# plt.show()
+# --- FINAL STEP: Save Model Predictions to CSV ---
+def save_final_predictions(features_df, rf_clf, image_dir, cell_height, cell_width):
+    import csv
+    def predict_and_save(img_list, dataset_type, model, out_writer):
+        for img_name in img_list:
+            img_path = os.path.join(image_dir, img_name)
+            if not os.path.exists(img_path):
+                continue
+            img = io.imread(img_path)
+            if img.shape[0] != 600 or img.shape[1] != 800:
+                continue
+            preds = []
+            for r in range(8):
+                for c in range(8):
+                    y1, y2 = r*cell_height, (r+1)*cell_height
+                    x1, x2 = c*cell_width, (c+1)*cell_width
+                    cell_img = img[y1:y2, x1:x2]
+                    features = extract_cell_features(cell_img)
+                    pred = model.predict([features])[0]
+                    preds.append(pred)
+            row = [img_name, dataset_type] + preds
+            out_writer.writerow(row)
+
+    # Prepare train and test image lists
+    train_img_names = features_df.iloc[X_train.shape[0]:]['image_name'].unique() if X_train.shape[0] < len(features_df) else features_df['image_name'].unique()
+    test_img_names = features_df.iloc[-X_test.shape[0]:]['image_name'].unique() if X_test.shape[0] < len(features_df) else features_df['image_name'].unique()
+
+    output_csv_path = r"C:\Users\pravi\PG IITB\cricket_object_detection\outputs\final_predictions.csv"
+    with open(output_csv_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        header = ['ImageFileName', 'TrainOrTest'] + [f'c{str(i+1).zfill(2)}' for i in range(64)]
+        writer.writerow(header)
+        # Run on train images
+        predict_and_save(train_img_names, 'Train', rf_clf, writer)
+        # Run on test images
+        predict_and_save(test_img_names, 'Test', rf_clf, writer)
+    print(f"Final predictions saved to {output_csv_path}")
+
+# Call the function at the end
+save_final_predictions(features_df, rf_clf, image_dir, cell_height, cell_width)
 
 
-# Visualize predictions for both models (Random Forest and KNN)
-for model_name, clf in zip(["Random Forest", "KNN"], [rf_clf, knn_clf]):
-    # Visualize 3 images per model
-    num_vis = min(3, len(img_files))
-    fig, axes = plt.subplots(1, num_vis, figsize=(18, 6))
-    if num_vis == 1:
-        axes = [axes]
-    for idx, img_name in enumerate(img_files[:num_vis]):
-        img_path = os.path.join(image_dir, img_name)
-        img = io.imread(img_path)
-        pred_labels = []
-        for r in range(8):
-            for c in range(8):
-                y1, y2 = r*cell_height, (r+1)*cell_height
-                x1, x2 = c*cell_width, (c+1)*cell_width
-                cell_img = img[y1:y2, x1:x2]
-                features = extract_cell_features(cell_img)
-                pred = clf.predict([features])[0]
-                pred_labels.append(pred)
-        ax = axes[idx]
-        ax.imshow(img)
-        for r in range(8):
-            for c in range(8):
-                y1, y2 = r*cell_height, (r+1)*cell_height
-                x1, x2 = c*cell_width, (c+1)*cell_width
-                label = pred_labels[r*8 + c]
-                rect = plt.Rectangle((x1, y1), cell_width, cell_height, fill=False, edgecolor=color_map[label], linewidth=2)
-                ax.add_patch(rect)
-        ax.set_title(f'{img_name}')
-        ax.axis('off')
-    plt.suptitle(f'Predicted cell labels for {num_vis} images ({model_name})')
-    plt.tight_layout()
-    plt.show()
+
 
 
