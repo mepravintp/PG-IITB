@@ -1,0 +1,16 @@
+
+
+* group_XX (main directory) done
+* group_XX_presentation.pdf
+* group_XX_video.mp4
+* output (sub directory) done
+* group_XX_output.csv (as described in the project document PDF) done
+* group_XX_pickle.pkl (optional – this need not be created) not needed
+* processed_images (sub directory) done
+* training images (sub-sub directory) done
+* all training images processed by the final model with colour-coded squares (as shown in the Project PDF) done
+* test images (sub-sub directory) done
+* all test images processed by the final model with colour-coded squares (as shown in the Project PDF) done
+
+code (sub directory) done
+all source code files (.ipynb, .py, etc.)

@@ -33,6 +33,7 @@ cricket_object_detection/
 2. **Preprocessing**: Resize/crop images to 800x600, save to train/test folders.
 3. **Annotation**: Annotate each image with 8x8 grid cell labels (0: no_object, 1: ball, 2: bat, 3: stump).
 4. **Manual Annotation**: Use GUI tool or script for interactive cell tagging.
+    ![alt text](image.png)
 5. **Feature Extraction**: Extract HOG, grayscale, and other features for each cell (see `src/cell_level_pipeline.py`).
 6. **Save Features**: Store all cell features and labels in `outputs/cell_features.csv`.
 7. **Model Training**: Train Random Forest and KNN classifiers on cell features.
@@ -49,6 +50,7 @@ cricket_object_detection/
 ## 5. Model Training & Evaluation
 - Trained both Random Forest and KNN classifiers on cell-level features.
 - Compared models using classification reports and bar graphs for precision, recall, F1, and accuracy.
+![alt text](image-1.png)
 - Visualized predictions for multiple images per model.
 
 ## 6. Visualizations
