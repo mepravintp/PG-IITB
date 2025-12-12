@@ -31,13 +31,13 @@ HOG features are ideal for cricket object detection because:
 3. Pipeline Overview:
 ---------------------
 Step 1: Input image → Convert to grayscale
-   - RGB image (800x600) is converted using weighted sum: 0.299*R + 0.587*G + 0.114*B
+   - RGB image (800x600) is converted using weighted sum: 0.299×R + 0.587×G + 0.114×B
    - This preserves luminance information crucial for edge detection
 
 Step 2: Extract HOG features
    - Compute gradients using Sobel operators
    - Divide image into cells (e.g., 8x8 pixels)
-   - For each cell, compute histogram of gradient orientations (typically 9 bins)
+   - For each cell, compute histogram of gradient orientations (typically 9 bins covering 180° with 20° intervals)
    - Normalize histograms to handle lighting variations
    - Result: A compact feature vector representing edge patterns
 
@@ -88,7 +88,7 @@ Technical Implementation Notes:
 --------------------------------
 * Image size: 800x600 pixels
 * Grid size: 8x8 (64 cells of 100x75 pixels each)
-* HOG parameters: cell_size=8, num_bins=9
+* HOG parameters: cell_size=8 pixels, num_bins=9
 * Additional features used alongside HOG:
   - Color histograms (48 features)
   - Edge features (14 features)
