@@ -124,19 +124,16 @@ def preprocess_image(image_path: str, output_path: Optional[str] = None) -> Opti
         Processed PIL Image object, or None if image doesn't meet requirements
     """
     try:
-        image = Image.open(image_path)
-        
+        image = Image.open(image_path)    
         # Convert to RGB if necessary
         if image.mode != 'RGB':
             image = image.convert('RGB')
-        
         # Check minimum size (before any cropping)
         width, height = image.size
         
         # For non-4:3 images, we need to check if we can get 800x600 after cropping
         target_ratio = 4 / 3
         current_ratio = width / height
-        
         if current_ratio > target_ratio:
             # Will crop width - check height is sufficient
             if height < IMAGE_HEIGHT:
@@ -154,7 +151,7 @@ def preprocess_image(image_path: str, output_path: Optional[str] = None) -> Opti
         
         # Crop to 4:3 aspect ratio
         image = crop_to_aspect_ratio(image)
-        
+   
         # Validate final size
         if not validate_image_size(image):
             return None

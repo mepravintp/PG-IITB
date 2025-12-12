@@ -1,0 +1,35 @@
+flowchart TD
+  subgraph Data["<b>Data Preparation</b>"]
+    direction LR
+    A(Collect Data) --> B(Resize Images) --> C(Annotate)
+  end   
+
+  subgraph Features["<b>Feature Engineering</b>"]
+    direction LR
+    D(Check Imbalance) --> E(Base Features) --> F(HOG & Grayscale)
+  end
+
+  subgraph Split["<b>Train/Test Split</b>"]
+    G(Split Data)
+  end
+
+  subgraph Modeling["<b>Modeling & Evaluation</b>"]
+    direction LR
+    H_RF(Random Forest) --> I(Classification Metrics)
+    H_KNN(KNN) --> I
+  end
+
+  subgraph Viz["<b>Visualization</b>"]
+    J(Visualize Results)
+  end
+
+  Data --> Features
+  Features --> Split
+  Split --> Modeling
+  Modeling --> Viz
+
+  style Data fill:#f0f8ff,stroke:#333,stroke-width:1px
+  style Features fill:#fff7e6,stroke:#333,stroke-width:1px
+  style Split fill:#e6f7ff,stroke:#333,stroke-width:1px
+  style Modeling fill:#e6ffe6,stroke:#333,stroke-width:1px
+  style Viz fill:#fff0f5,stroke:#333,stroke-width:1px
