@@ -132,6 +132,7 @@ Usage Example:
     # Preprocess images
     python main.py preprocess --input-dir raw_images --output-dir data/train/bat
     
+    
     # Create sample annotations (to be edited manually)
     python main.py annotate --image-dir data/train --output-file annotations/train.json
     
