@@ -9,8 +9,8 @@ import json
 def main():
     
     print("Current working directory:", os.getcwd())
-    input_dir = 'data/input'  # Change as needed
-    output_dir = 'data/train/bat'  # Change as needed
+    input_dir = 'C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\data\\Stumps'  # Change as needed
+    output_dir = 'C:\\Users\\pravi\\PG IITB\\cricket_object_detection\\data\\train\\Stumps'  # Change as needed
     
     print(f"Preprocessing images from: {input_dir}")
     #list all files from input_dir
@@ -22,21 +22,21 @@ def main():
     print(f"Processed: {processed} images")
     print(f"Skipped: {skipped} images")
 
-    # After preprocessing, create sample annotations for the same files
-    annotation_output = 'data/train/bat/sample_annotations.json'  # Change as needed
-    create_sample_annotations(input_dir, annotation_output)
-    print(f"Sample annotations created at: {annotation_output}")
+    # # After preprocessing, create sample annotations for the same files
+    # annotation_output = 'data/train/bat/sample_annotations.json'  # Change as needed
+    # create_sample_annotations(input_dir, annotation_output)
+    # print(f"Sample annotations created at: {annotation_output}")
 
-    # Visualize annotation for the first image
-    with open(annotation_output, 'r') as f:
-        annotations = json.load(f)
-    if annotations:
-        first_ann = annotations[0]
-        img_path = os.path.join(input_dir, first_ann['image_filename'])
-        image = Image.open(img_path).convert('RGB')
-        image_np = np.array(image)
-        vis = visualize_annotation(image_np, first_ann['labels'], output_path='data/train/bat/vis_annotated.jpg')
-        print('Saved visualization to data/train/bat/vis_annotated.jpg')
+    # # Visualize annotation for the first image
+    # with open(annotation_output, 'r') as f:
+    #     annotations = json.load(f)
+    # if annotations:
+    #     first_ann = annotations[0]
+    #     img_path = os.path.join(input_dir, first_ann['image_filename'])
+    #     image = Image.open(img_path).convert('RGB')
+    #     image_np = np.array(image)
+    #     vis = visualize_annotation(image_np, first_ann['labels'], output_path='data/train/bat/vis_annotated.jpg')
+    #     print('Saved visualization to data/train/bat/vis_annotated.jpg')
 
 if __name__ == '__main__':
     main()

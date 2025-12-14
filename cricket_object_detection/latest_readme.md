@@ -49,9 +49,6 @@ cricket_object_detection/
    - Annotate each image with grid cell labels (0: no object, 1: ball, 2: bat, 3: stump).
    - Store annotation files in `data/annotations/` (e.g., `train_annotations.json`).
 
-   YOgesh - Balls
-   Yugal- Bats
-   Ratish - Stumps
 
   
 
@@ -67,6 +64,12 @@ cricket_object_detection/
       pre process image by using preprocess.py .by this we will have preprocessed images in train/$label.
       run annotate utillity and tag bat,ball stumps for your respective images.
       
+      YOgesh - Balls
+      Yugal- Bats
+      Ratish - Stumps
+      
+   Timeline:
+         Tuesday Night - 10 PM 
 
 5. **Feature Extraction**
    - Extract hand-crafted features from each grid cell using scripts in `src/`.
