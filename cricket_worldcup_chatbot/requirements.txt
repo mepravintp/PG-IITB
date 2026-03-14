@@ -1,0 +1,9 @@
+# Dependencies for Cricket World Cup Chatbot
+
+pandas
+requests
+beautifulsoup4
+Flask
+scikit-learn
+nltk
+spacy
