@@ -1,3 +1,15 @@
+# 🎓 Deep Learning & Computer Vision: A Complete Learning Journey
+
+## 📚 Table of Contents
+
+1. [📸 Stage 1: The Foundation of Visual Understanding](#-stage-1-the-foundation-of-visual-understanding)
+2. [🧠 Stage 2: Neural Network Fundamentals](#-stage-2-neural-network-fundamentals)
+3. [📊 Stage 3: Training & Loss](#-stage-3-training--loss)
+4. [🔄 Stage 4: Optimization and Training (Backpropagation)](#-stage-4-optimization-and-training-backpropagation)
+5. [🔍 Stage 5: Convolutional Neural Networks (CNNs)](#-stage-5-convolutional-neural-networks-cnns)
+
+---
+
 # 📸 Stage 1: The Foundation of Visual Understanding
 
 ## Context
