@@ -255,7 +255,7 @@ Two independent investments with equal weights ($w_1 = w_2 = 0.5$):
 - Investment 2: Expected return 6%, Variance 4
 
 **Portfolio Expected Return:**
-$$E[P] = 0.5 \times 0.08 + 0.5 \times 0.06 = 0.07 \text{ (7%)}$$
+$$E[P] = 0.5 \times 0.08 + 0.5 \times 0.06 = 0.07 \quad (7\%)$$
 
 **Portfolio Variance:**
 $$\operatorname{Var}(P) = (0.5)^2 \times 9 + (0.5)^2 \times 4 = 0.25 \times 9 + 0.25 \times 4 = 2.25 + 1 = 3.25$$
@@ -627,39 +627,7 @@ $$L'(\theta) = 2(\theta - 3)$$
 
 ---
 
-## Study Summary by Topic
 
-### Probability & Statistics Essentials
-- **Probability:** Concepts of prior, likelihood, posterior, and Bayes' theorem
-- **Distributions:** Binomial, exponential, and their properties
-- **Portfolio Theory:** Combining risky assets with expected value and variance
-- **Hypothesis Testing:** Using evidence to test claims about parameters
-
-### Linear Algebra Essentials
-- **Dot Product:** Measure of vector similarity
-- **Norms:** Measure of vector length/magnitude
-- **Projection:** Component of one vector in direction of another
-- **Linear Independence:** Critical for OLS solution to exist
-- **Matrix Rank:** Maximum number of linearly independent rows/columns
-
-### Regression Fundamentals
-- **OLS Solution:** Minimizes squared residuals
-- **Hat Matrix:** Projects observations onto fitted values
-- **Residuals:** Unexplained variation by the model
-
-### Model Evaluation Metrics
-- **R²:** Proportion of variance explained (0 to 1)
-- **RSS:** Residual error sum
-- **MSE/RMSE:** Average error per observation
-- **Standard Errors:** Uncertainty in coefficient estimates
-
-### Feature Engineering Techniques
-- **Dummy Encoding:** Categorical → numerical
-- **Interactions:** Capture synergy between features
-- **Polynomials:** Model non-linear relationships
-- **Selection Criteria:** Choose model size optimally (Cp, BIC, Adj-R²)
-
----
 
 ## Quick Reference Table
 
@@ -681,17 +649,4 @@ $$L'(\theta) = 2(\theta - 3)$$
 
 ---
 
-## Exam Preparation Tips
 
-✓ **Master the formulas** - Know what each formula measures  
-✓ **Understand assumptions** - When can each method be applied  
-✓ **Practice calculations** - Work through numerical examples  
-✓ **Interpret results** - Be able to explain what coefficients mean  
-✓ **Feature engineering** - Know when to use interactions, polynomials, etc.  
-✓ **Model selection** - Understand trade-offs between model complexity and fit  
-
----
-
-**Last Updated:** March 15, 2026  
-**Status:** Lectures 2-7 completed | Lecture 8 pending  
-**Tip:** Use this as a study companion. For deep understanding, supplement with practice problems and datasets.

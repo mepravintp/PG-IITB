@@ -44,6 +44,6 @@ $$\sum_{i=1}^{n} \alpha_i - \frac{1}{2} \sum_{i,j} \alpha_i \alpha_j y_i y_j \la
 ## 6️⃣ Final Classifier
 
 **Decision function:**
-$$f^*(x) = \text{sign}\left( \sum_{i=1}^{n} \alpha_i^* y_i \langle x_i, x \rangle + b^* \right)$$
+$$f^*(x) = \text{sgn}\left( \sum_{i=1}^{n} \alpha_i^* y_i \langle x_i, x \rangle + b^* \right)$$
 
 **Efficiency:** Only support vectors (non-zero $\alpha_i$) contribute to prediction

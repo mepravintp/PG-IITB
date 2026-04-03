@@ -55,39 +55,7 @@
 - **Training error:** Decreases continuously
 - **Test error:** U-shaped curve (decreases then increases)
 
-**Explanation:** More complex models fit training data better but overfit. Test error increases after the optimal point.---
-
-## 📌 Topic 2: Linear and Polynomial Regression
-
-### ❓ Q1: Best-fit line for points (1,2), (2,5), (3,4)?
-
-**Answer:** y = x + 5/3  (w = 1, b = 5/3)
-
-**Explanation:**
-- Mean: x̄ = 2, ȳ = 11/3
-- Slope: Σ(x_i - x̄)(y_i - ȳ) / Σ(x_i - x̄)² = 2/2 = 1
-- Intercept: b = ȳ - w·x̄ = 11/3 - 1(2) = 5/3
-
----
-
-### ❓ Q2: Effect of high-leverage outlier on regression line?
-
-**Answer:** 
-- Slope changes **significantly**
-- R² **decreases**
-
-**Explanation:** A high-leverage point far in x-direction pulls the line toward itself, altering slope and worsening fit quality.
-
----
-
-### ❓ Q3: How to choose optimal polynomial degree?
-
-**Answer:** Choose degree where **validation/test error is minimum**.
-
-**Explanation:**
-- Training error always decreases (more flexibility)
-- Validation error: decreases then increases (U-shape)
-- Optimal = bottom of U-curve (sweet spot before overfitting)
+**Explanation:** More complex models fit training data better but overfit. Test error increases after the optimal point.
 
 ---
 
