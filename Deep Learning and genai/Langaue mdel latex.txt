@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{margin=1in}
+\begin{document}
+
+\section*{Comparison of Language Modeling Approaches}
+
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{8pt}
+
+\begin{tabular}{|>{\raggedright}m{2.5cm}|>{\raggedright}m{4cm}|>{\raggedright}m{3.5cm}|>{\raggedright}m{6cm}|>{\raggedright}m{3.5cm}|}
+\hline
+\textbf{Concept} & \textbf{Definition} & \textbf{Problem it Solves} & \textbf{How it Solves (Types, Formula, Example)} & \textbf{Limitation} \\
+\hline
+
+\textbf{N-gram LM} &
+Statistical language model that predicts the next word based on the last $n$ words. &
+Provides a simple way to estimate conditional probabilities of word sequences. &
+Formula: $P(w_t|w_{t-n+1},...,w_{t-1})$. \newline
+Example: Bigram model predicts ``sat'' after ``cat''. &
+Suffers from sparsity (rare sequences), requires huge storage, cannot handle long-range dependencies. \\
+\hline
+
+\textbf{Perplexity} &
+Evaluation metric for language models; measures how well a model predicts a sample. &
+Quantifies predictive performance of a language model. &
+Formula: $PP = 2^{-\frac{1}{N}\sum_{i=1}^N \log_2 P(w_i)}$. \newline
+Example: Lower perplexity indicates better prediction accuracy. &
+Only a numeric score; does not explain why errors occur or provide qualitative insight. \\
+\hline
+
+\textbf{RNN} &
+Neural network with recurrent connections that processes sequences word by word. &
+Handles variable-length input and captures sequential dependencies. &
+Formula: $h_t = f(Wx_t + Uh_{t-1})$. \newline
+Example: Predicting the next word in a sentence. &
+Sequential processing (slow), vanishing/exploding gradients, struggles with long dependencies. \\
+\hline
+
+\textbf{LSTM} &
+Advanced RNN with memory cell and gating mechanisms (input, forget, output gates). &
+Addresses vanishing gradient problem and remembers long-term dependencies. &
+Cell state update: $C_t = f_t \cdot C_{t-1} + i_t \cdot \tilde{C}_t$. \newline
+Example: Captures relation between ``book'' and ``was amazing''. &
+Computationally expensive, still sequential in nature. \\
+\hline
+
+\textbf{Seq2Seq} &
+Encoder–Decoder RNN architecture mapping input sequence to output sequence of different length. &
+Enables variable-length outputs, e.g., machine translation. &
+Encoder compresses input into a vector; Decoder generates output step by step. \newline
+Example: English sentence $\rightarrow$ French translation. &
+Information bottleneck: entire input compressed into one vector, loses detail for long sentences. \\
+\hline
+
+\textbf{Attention} &
+Mechanism that allows decoder to focus on relevant encoder states instead of a single vector. &
+Solves Seq2Seq bottleneck, improves handling of long-range dependencies. &
+Formula: $\text{Attention}(q,k,v) = \text{softmax}(qk^T)v$. \newline
+Types: Additive (Bahdanau), Dot-product (Luong), Self-attention, Multi-head. \newline
+Example: Decoder attends to ``yesterday'' when generating ``hier''. &
+Adds complexity; self-attention has quadratic cost in memory and compute. \\
+\hline
+
+\end{tabular}
+
+\end{document}

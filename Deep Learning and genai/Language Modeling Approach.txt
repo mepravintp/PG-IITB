@@ -1,0 +1,114 @@
+Comparison of Language Modeling Approaches
+The following report outlines various concepts in language modeling, their definitions, the specific problems they address, their implementation methods, and their inherent limitations based on the provided source
+.
+Concept
+Definition
+Problem it Solves
+How it Solves (Types, Formula, Example)
+Limitation
+N-gram LM
+A statistical language model that predicts the next word based on the previous n words
+.
+It provides a simple method for estimating the conditional probabilities of word sequences
+.
+Formula: P(w 
+t
+​
+ ∣w 
+t−n+1
+​
+ ,…,w 
+t−1
+​
+ ) <br> Example: A bigram model might predict "sat" following the word "cat"
+.
+It suffers from data sparsity for rare sequences, requires significant storage, and cannot manage long-range dependencies
+.
+Perplexity
+An evaluation metric used to measure how effectively a language model predicts a given sample
+.
+it quantifies the predictive performance of a language model
+.
+Formula: PP=2 
+− 
+N
+1
+​
+ ∑ 
+i=1
+N
+​
+ log 
+2
+​
+ P(w 
+i
+​
+ )
+  <br> Example: A lower perplexity score indicates higher prediction accuracy
+.
+It is purely a numeric score and does not provide qualitative insights or explain the causes of errors
+.
+RNN
+A neural network featuring recurrent connections designed to process sequences word by word
+.
+it handles input of variable lengths and captures sequential dependencies
+.
+Formula: h 
+t
+​
+ =f(Wx 
+t
+​
+ +Uh 
+t−1
+​
+ ) <br> Example: It is used for tasks like predicting the next word in a sentence
+.
+Processing is sequential and slow; it also suffers from vanishing/exploding gradients and struggles with long dependencies
+.
+LSTM
+An advanced RNN architecture equipped with a memory cell and gating mechanisms (input, forget, and output gates)
+.
+It addresses the vanishing gradient problem and is capable of remembering long-term dependencies
+.
+Formula (Cell state update): C 
+t
+​
+ =f 
+t
+​
+ ⋅C 
+t−1
+​
+ +i 
+t
+​
+ ⋅ 
+C
+~
+  
+t
+​
+  <br> Example: It can capture the relationship between "book" and "was amazing" across a sentence
+.
+It is computationally expensive and remains sequential in nature
+.
+Seq2Seq
+An encoder–decoder RNN architecture that maps an input sequence to an output sequence of a different length
+.
+It enables the generation of variable-length outputs, such as those needed for machine translation
+.
+Method: An encoder compresses input into a single vector, which the decoder then uses to generate output step by step. <br> Example: Translating an English sentence into French
+.
+It faces an information bottleneck because the entire input must be compressed into one vector, losing detail in long sentences
+.
+Attention
+A mechanism allowing a decoder to focus on specific relevant encoder states instead of relying on a single fixed vector
+.
+It resolves the Seq2Seq information bottleneck and improves the handling of long-range dependencies
+.
+Formula: Attention(q,k,v)=softmax(qk 
+T
+ )v <br> Types: Additive (Bahdanau), Dot-product (Luong), Self-attention, Multi-head. <br> Example: A decoder focuses on "yesterday" when generating the French word "hier"
+.

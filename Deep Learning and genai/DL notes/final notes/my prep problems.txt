@@ -1,0 +1,431 @@
+Deep Learning & GenAI – Numerical Practice Set (25 Problems)
+🔹 Problem 1: Bradley–Terry Loss
+Given: 
+𝑟
+(
+𝑦
++
+)
+=
+1.8
+,
+𝑟
+(
+𝑦
+−
+)
+=
+0.7
+.
+Asked: Compute loss.
+Intuition: Loss measures preference correctness.
+Formula: 
+𝑙
+=
+log
+⁡
+(
+𝜎
+(
+𝑟
++
+−
+𝑟
+−
+)
+)
+.
+Steps: 
+𝑧
+=
+1.1
+, 
+𝜎
+=
+0.75
+, 
+log
+⁡
+=
+−
+0.288
+.
+Conclusion: Loss = -0.288.
+
+🔹 Problem 2: Perplexity / Cross‑Entropy
+Given: Probabilities [0.25, 0.5, 0.125].
+Asked: Compute cross‑entropy and perplexity.
+Intuition: Cross‑entropy = average surprise; perplexity = branching factor.
+Formula: 
+𝐻
+=
+−
+1
+𝑁
+∑
+log
+⁡
+2
+𝑞
+(
+𝑤
+𝑡
+)
+,
+𝑃
+𝑃
+𝐿
+=
+2
+𝐻
+.
+Steps: Logs = -2,-1,-3 → sum=-6 → H=2 bits → PPL=4.
+Conclusion: Cross‑entropy=2, PPL=4.
+
+🔹 Problem 3: RNN/GRU/LSTM Parameters
+Given: 
+𝑚
+=
+64
+,
+𝑛
+=
+128
+.
+Asked: Compute parameters.
+Intuition: Each gate is affine map.
+Formula: 
+𝑛
+(
+𝑚
++
+𝑛
++
+1
+)
+.
+Steps: Base=24,704 → RNN=24,704; GRU=74,112; LSTM=98,816.
+Conclusion: GRU≈3×RNN, LSTM≈4×RNN.
+
+🔹 Problem 4: Transformer Parameters
+Given: 
+𝑑
+=
+256
+,
+𝑑
+𝑓
+𝑓
+=
+1024
+,
+𝐿
+=
+4
+,
+𝑉
+=
+20
+𝑘
+,
+𝑛
+𝑝
+𝑜
+𝑠
+=
+512
+.
+Asked: Compute total parameters.
+Intuition: Attention+FFN dominate.
+Formula: 
+𝐿
+(
+4
+𝑑
+2
++
+2
+𝑑
+𝑑
+𝑓
+𝑓
+)
++
+𝑉
+𝑑
++
+𝑛
+𝑝
+𝑜
+𝑠
+𝑑
+.
+Steps: Attention=262k, FFN=524k, per layer=786k → 4 layers=3.15M → embeddings=5.25M → total=8.4M.
+Conclusion: ≈ 8.4M parameters.
+
+🔹 Problem 5: CNN Output Size
+Given: Input 32×32, kernel 5×5, stride1, pad0.
+Asked: Output size.
+Formula: 
+(
+𝑊
+−
+𝐾
++
+2
+𝑃
+)
+/
+𝑆
++
+1
+.
+Steps: (32-5)/1+1=28.
+Conclusion: 28×28.
+
+🔹 Problem 6: Max‑Pooling
+Given: 28×28, pool 2×2 stride2.
+Asked: Output size.
+Steps: 28/2=14.
+Conclusion: 14×14.
+
+🔹 Problem 7: CNN Parameter Count
+Given: Kernel 3×3, Cin=3, Cout=16.
+Asked: Parameters.
+Formula: 
+(
+𝐾
+ℎ
+𝐾
+𝑤
+𝐶
+𝑖
+𝑛
+)
+𝐶
+𝑜
+𝑢
+𝑡
++
+𝐶
+𝑜
+𝑢
+𝑡
+.
+Steps: (27×16)+16=448.
+Conclusion: 448.
+
+🔹 Problem 8: CNN + Pooling Combined
+Given: Input 32×32, conv 3×3 stride1 pad1 → pool 2×2 stride2.
+Asked: Final size.
+Steps: Conv=32×32 → Pool=16×16.
+Conclusion: 16×16.
+
+🔹 Problem 9: CNN Gradient
+Given: Input [[1,2],[3,4]], kernel [[1,0],[0,-1]], grad=2.
+Asked: Gradient w.r.t kernel.
+Formula: 
+∂
+𝐿
+/
+∂
+𝑊
+𝑖
+𝑗
+=
+(
+∂
+𝐿
+/
+∂
+𝑌
+)
+⋅
+𝑋
+𝑖
+𝑗
+.
+Steps: Multiply each input by 2 → [[2,4],[6,8]].
+Conclusion: Gradient map.
+
+🔹 Problem 10: CNN Prediction
+Given: Input [[2,1],[0,3]], kernel [[1,-1],[2,0]].
+Asked: Output.
+Steps: 2×1+1×(-1)+0×2+3×0=1.
+Conclusion: Output=1.
+
+🔹 Problem 11: Max‑Pooling Gradient
+Given: Patch [5,2;1,4], max=5, grad=3.
+Asked: Gradient distribution.
+Steps: Gradient flows to max only → [3,0;0,0].
+Conclusion: Gradient map.
+
+🔹 Problem 12: CNN Output + Params
+Given: Input 64×64, kernel 3×3, stride1 pad1, Cin=3, Cout=32.
+Asked: Output size + params.
+Steps: Output=64×64, Params=(27×32)+32=896.
+Conclusion: 64×64, 896 params.
+
+🔹 Problem 13: Positional Encoding Parameters
+Given: Learned PE, max_len=512, d=256.
+Asked: Parameters.
+Formula: max_len×d.
+Steps: 512×256=131,072.
+Conclusion: 131k parameters.
+
+🔹 Problem 14: Prompting – Zero Shot
+Given: Prompt “Translate to French: good morning”.
+Asked: What happens?
+Intuition: Model relies only on pretraining.
+Conclusion: Zero‑shot uses no examples, depends on learned knowledge.
+
+🔹 Problem 15: Prompting – Few Shot
+Given: Prompt with examples: EN: hello→FR: bonjour, EN: thanks→FR: merci.
+Asked: What happens?
+Intuition: Model infers pattern from examples.
+Conclusion: Few‑shot prompting uses demonstrations in context.
+
+🔹 Problem 16: Instruction Fine‑Tuning
+Given: Base LM trained on raw text.
+Asked: Why SFT needed?
+Intuition: Aligns model to follow instructions.
+Conclusion: SFT trains on (prompt, ideal response) pairs.
+
+🔹 Problem 17: KL Divergence in RLHF
+Given: KL term in objective.
+Asked: Role.
+Formula: 
+𝐾
+𝐿
+(
+𝜋
+∣
+∣
+𝜋
+𝑟
+𝑒
+𝑓
+)
+=
+∑
+𝜋
+log
+⁡
+(
+𝜋
+/
+𝜋
+𝑟
+𝑒
+𝑓
+)
+.
+Conclusion: Penalises drift, prevents reward hacking.
+
+🔹 Problem 18: Masked Language Modeling (MLM)
+Given: 15% tokens masked.
+Asked: Why suitable for BERT?
+Conclusion: Bidirectional context predicts masked tokens → rich representations.
+
+🔹 Problem 19: Vanilla Seq2Seq Bottleneck
+Given: Encoder compresses input to single vector.
+Asked: Limitation.
+Conclusion: Bottleneck loses info for long sequences; attention fixes it.
+
+🔹 Problem 20: Katz Backoff
+Given: Distribution must sum to 1.
+Asked: Derive 
+𝛼
+(
+𝑤
+𝑖
+−
+1
+)
+.
+Formula: 
+𝛼
+=
+1
+−
+∑
+𝑃
+∗
+∑
+𝑃
+𝑏
+𝑎
+𝑐
+𝑘
+𝑜
+𝑓
+𝑓
+.
+Conclusion: Redistributes leftover probability mass.
+
+🔹 Problem 21: Laplace Smoothing
+Given: Bigram counts: count(I)=3, count(I am)=2, V=8.
+Asked: Compute P(am|I) with add‑1.
+Formula: 
+(
+𝑐
+𝑜
+𝑢
+𝑛
+𝑡
++
+1
+)
+/
+(
+𝑐
+𝑜
+𝑢
+𝑛
+𝑡
++
+∣
+𝑉
+∣
+)
+.
+Steps: (2+1)/(3+8)=3/11=0.273.
+Conclusion: Probability=0.273.
+
+🔹 Problem 22: Word2Vec – Parameter Count
+Given: Vocab=10,000, embedding dim=300.
+Asked: Parameters.
+Formula: V×d.
+Steps: 10,000×300=3,000,000.
+Conclusion: 3M parameters.
+
+🔹 Problem 23: Gradient Descent Update
+Given: Weight=0.5, grad=0.2, lr=0.1.
+Asked: New weight.
+Formula: 
+𝑤
+𝑛
+𝑒
+𝑤
+=
+𝑤
+−
+𝜂
+𝑔
+.
+Steps: 0.5-0.1×0.2=0.48.
+Conclusion: Updated weight=0.48.
+
+🔹 Problem 24: Cross‑Entropy vs Perplexity
+Given: Cross‑entropy=2.25 bits/token.
+Asked: Perplexity.
+Formula: 
+𝑃
+𝑃
+𝐿
+=
+2
+𝐻
+.
+Steps: 2^2.25≈4.76.
+Conclusion: PPL=4.76.

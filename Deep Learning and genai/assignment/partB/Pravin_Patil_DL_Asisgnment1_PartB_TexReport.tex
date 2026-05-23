@@ -1,0 +1,456 @@
+\documentclass[10pt,a4paper,twocolumn]{article}
+
+% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage[a4paper, top=1.8cm, bottom=1.8cm, left=1.4cm, right=1.4cm,
+            columnsep=0.6cm]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{parskip}
+\usepackage{caption}
+\usepackage{multicol}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+\captionsetup{font=footnotesize, labelfont=bf, skip=3pt}
+
+% ─── Colors ──────────────────────────────────────────────────────────────────
+\definecolor{darkblue}{RGB}{15,55,120}
+\definecolor{primaryblue}{RGB}{30,100,200}
+\definecolor{lightblue}{RGB}{225,237,255}
+\definecolor{teal}{RGB}{20,130,95}
+\definecolor{lightgray}{RGB}{245,245,245}
+
+% ─── Hyperref ────────────────────────────────────────────────────────────────
+\hypersetup{colorlinks=true, linkcolor=darkblue, urlcolor=primaryblue,
+            pdftitle={IMDB Sentiment: RNN/LSTM/Attention}}
+
+% ─── Headers ─────────────────────────────────────────────────────────────────
+\pagestyle{fancy}\fancyhf{}
+\lhead{\footnotesize\textcolor{darkblue}{IMDB Sentiment Classification — Part B}}
+\rhead{\footnotesize\textcolor{darkblue}{RNN · LSTM · Attention}}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+% ─── Section formatting ──────────────────────────────────────────────────────
+\titleformat{\section}{\small\bfseries\color{darkblue}}{B\thesection.}{0.4em}{}[\vspace{-2pt}\rule{\columnwidth}{0.4pt}\vspace{-4pt}]
+\titleformat{\subsection}{\small\bfseries\color{primaryblue}}{\thesubsection.}{0.3em}{}
+\titlespacing{\section}{0pt}{6pt}{3pt}
+\titlespacing{\subsection}{0pt}{4pt}{2pt}
+
+% ─── tcolorbox styles ────────────────────────────────────────────────────────
+\newtcolorbox{resultbox}[1][]{colback=lightblue,colframe=primaryblue,
+  boxrule=0.5pt,arc=2pt,left=3pt,right=3pt,top=2pt,bottom=2pt,
+  fonttitle=\footnotesize\bfseries,title=#1}
+
+% ─── TikZ styles ─────────────────────────────────────────────────────────────
+\tikzset{
+  blk/.style={rectangle,draw=primaryblue,fill=lightblue,
+              minimum width=1.1cm,minimum height=0.55cm,
+              font=\scriptsize,align=center,rounded corners=2pt},
+  arr/.style={-Stealth,thick,color=darkblue!60},
+}
+
+\setlist[itemize]{leftmargin=*,topsep=1pt,itemsep=0pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=*,topsep=1pt,itemsep=0pt,parsep=0pt}
+
+% ─── Table row color ─────────────────────────────────────────────────────────
+\usepackage{colortbl}
+
+\begin{document}
+
+% ── Title (one-column) ───────────────────────────────────────────────────────
+\twocolumn[{%
+\begin{center}
+  {\large\bfseries\color{darkblue}
+    IMDB Sentiment Classification: RNN, LSTM \& Attention}\\[3pt]
+  {\small\color{primaryblue}
+    Part B — Questions B1–B6 \quad|\quad
+    Binary Sentiment Classification on IMDB Movie Reviews}\\[4pt]
+  \begin{tcolorbox}[colback=lightblue,colframe=primaryblue,
+      boxrule=0.5pt,arc=3pt,width=0.75\textwidth,
+      halign=center,left=6pt,right=6pt,top=3pt,bottom=3pt]
+    \footnotesize
+    \textbf{Dataset:} IMDB 50k reviews \quad
+    \textbf{Models:} Vanilla RNN, LSTM, Attention-RNN, Attention-LSTM \quad
+    \textbf{Embeddings:} One-Hot, Word2Vec, GloVe \quad
+    \textbf{Framework:} PyTorch 2.3 / NVIDIA Tesla T4
+  \end{tcolorbox}
+  \vspace{4pt}
+\end{center}
+}]
+
+% =============================================================================
+\setcounter{section}{0}
+\section{Dataset \& Preprocessing (B1)}
+% =============================================================================
+
+\textbf{Dataset partition.}
+The full labeled IMDB corpus (25k train + 25k test) is used. The training set
+is split 90/10 to yield validation data. The 50k unlabeled reviews are excluded.
+
+\begin{table}[H]
+\centering\small
+\caption{Dataset split statistics}
+\begin{tabular}{lccc}
+\toprule
+Split & Samples & Pos & Neg\\
+\midrule
+Train & 22,500 & 11,250 & 11,250\\
+Val   &  2,500 &  1,250 &  1,250\\
+Test  & 25,000 & 12,500 & 12,500\\
+\bottomrule
+\end{tabular}
+\label{tab:dataset}
+\end{table}
+
+\textbf{Preprocessing pipeline} (applied in order):
+\begin{enumerate}
+  \item \textbf{Lowercase} — unifies case; ``The'' = ``the''
+  \item \textbf{Strip HTML} — removes \texttt{<br/>} and other tags
+  \item \textbf{Remove punctuation} — retain only \texttt{[a-z\textbackslash s]}
+  \item \textbf{Lemmatize} (NLTK \texttt{WordNetLemmatizer}) — reduces inflected
+        forms to dictionary roots; e.g.\ \textit{running}$\to$\textit{run}
+  \item \textbf{Whitespace tokenize} — simple split after cleaning
+\end{enumerate}
+
+\textbf{Why lemmatization over stemming?} Lemmatization produces valid
+dictionary forms (e.g.\ \textit{better}$\to$\textit{good}) that exist in
+GloVe/Word2Vec vocabularies, whereas stemming produces phonetic roots
+(\textit{happi}, \textit{runn}) that are absent from pre-trained embeddings,
+severely degrading coverage. Sequence length statistics: mean = 233 tokens,
+median = 195, 95\textsuperscript{th} pctile = 590.
+Setting $T_{\max}=256$ covers 61.8\% of reviews without any truncation.
+
+% =============================================================================
+\section{Vocabulary \& Embeddings (B2)}
+% =============================================================================
+
+\textbf{Vocabulary} is built from training data only (prevents leakage).
+Tokens with frequency ${<}\,5$ are discarded; the top-30k remaining tokens
+are retained. Two special tokens are reserved:
+\texttt{<PAD>} (idx 0) and \texttt{<UNK>} (idx 1).
+Final vocabulary size: $|\mathcal{V}|=28{,}431$.
+
+\begin{table}[H]
+\centering\small
+\caption{Global hyperparameters}
+\begin{tabular}{lll}
+\toprule
+Parameter & Value & Note\\
+\midrule
+$|\mathcal{V}|$ & 28,431 & after min\_freq=5 filter\\
+$T_{\max}$      & 256    & truncate/pad to this length\\
+$d_{\text{emb}}$& 100    & Word2Vec \& GloVe dim\\
+Batch size      & 64     & fits all models in 16\,GB VRAM\\
+\bottomrule
+\end{tabular}
+\label{tab:hyperparam}
+\end{table}
+
+\textbf{One-Hot.}
+Token $w_i \mapsto \mathbf{e}_i\!\in\!\{0,1\}^{|\mathcal{V}|}$. No semantic
+information; orthogonal representations. A linear projection layer
+$\mathbb{R}^{|\mathcal{V}|}\!\to\!\mathbb{R}^{256}$ is prepended to the RNN,
+adding ${\sim}7.3$M parameters.
+
+\textbf{Word2Vec} (skip-gram, Gensim): trained on 22.5k IMDB reviews.
+Config: $d=100$, window=5, min\_count=5, 10 epochs. Captures domain-specific
+sentiment semantics. Vocabulary coverage: 98.1\%.
+
+\textbf{GloVe 6B-100d} (pre-trained): Wikipedia + Gigaword (6B tokens).
+Tokens absent from GloVe are initialised $\mathcal{U}(-0.1,0.1)$.
+All embeddings are fine-tuned during training. Coverage: 89.1\%.
+
+\begin{table}[H]
+\centering\small
+\caption{Embedding method comparison}
+\begin{tabular}{llll}
+\toprule
+Method & Dim & Corpus & Coverage\\
+\midrule
+One-Hot  & 28,431 & — & 100\%\\
+Word2Vec & 100    & IMDB (5M tok.) & 98.1\%\\
+GloVe 6B & 100    & Wiki+GW (6B tok.) & 89.1\%\\
+\bottomrule
+\end{tabular}
+\label{tab:emb}
+\end{table}
+
+% =============================================================================
+\section{Vanilla RNN (B3)}
+% =============================================================================
+
+\textbf{Architecture} ($L=2$ layers, $h=256$):
+
+\begin{center}
+\begin{tikzpicture}[node distance=0.18cm and 0.22cm]
+  \node[blk](emb){Embed\\$(B,T,d)$};
+  \node[blk,right=of emb](d1){Drop\\0.5};
+  \node[blk,right=of d1](r1){RNN\\L1};
+  \node[blk,right=of r1](r2){RNN\\L2};
+  \node[blk,right=of r2](hT){$h_T$};
+  \node[blk,right=of hT](fc){FC\\$\hat{y}$};
+  \foreach \a/\b in {emb/d1,d1/r1,r1/r2,r2/hT,hT/fc}
+    \draw[arr](\a)--(\b);
+\end{tikzpicture}
+\end{center}
+
+The recurrent update at step $t$ is:
+\begin{equation}
+  \mathbf{h}_t = \tanh\!\left(\mathbf{W}_{hh}\mathbf{h}_{t-1}
+                + \mathbf{W}_{xh}\mathbf{x}_t + \mathbf{b}\right)
+\end{equation}
+Classification: $\hat{y}=\sigma(\mathbf{W}_c\,\text{Drop}(\mathbf{h}_T)+b_c)$.
+
+\textbf{Hyperparameter justification.}
+$L=2$: single layer underfits; $L\ge3$ compounds vanishing gradients.
+$h=256$: sufficient capacity for 256-token sequences without overfitting 22.5k samples.
+Dropout $p=0.5$ between layers and pre-classifier.
+
+\textbf{Training config:} Adam ($\text{lr}=10^{-3}$, wd=$10^{-5}$),
+BCELoss, gradient clip norm=1.0, ReduceLROnPlateau, early stopping patience=3.
+
+\textbf{Challenges.}
+
+\textit{Vanishing gradients:} BPTT gradient at step 1 involves a product of
+$T{-}1$ Jacobians:
+\begin{equation}
+  \frac{\partial\mathcal{L}}{\partial\mathbf{h}_1}
+  \!=\!\frac{\partial\mathcal{L}}{\partial\mathbf{h}_T}
+  \prod_{t=2}^{T}\!\mathbf{W}_{hh}^\top\operatorname{diag}(1\!-\!\mathbf{h}_t^2)
+\end{equation}
+Since $\tanh'\!\in\![0,1]$, this product shrinks exponentially for $T=256$,
+making early tokens untrainable. Mitigated by gradient clipping (norm=1.0).
+
+\textit{Long-range dependency failure:} $\mathbf{h}_T$ must summarise all
+256 tokens. Early sentiment-bearing phrases are progressively overwritten,
+directly motivating LSTM (B5) and attention (B6).
+
+\begin{table}[H]
+\centering\small
+\caption{RNN-GloVe training log (best epoch = 7)}
+\begin{tabular}{ccccc}
+\toprule
+Ep & TrLoss & TrAcc & ValLoss & ValAcc\\
+\midrule
+1 & 0.582 & 69.1\% & 0.563 & 70.9\%\\
+3 & 0.423 & 80.9\% & 0.431 & 80.2\%\\
+5 & 0.360 & 84.8\% & 0.391 & 83.6\%\\
+\rowcolor{lightblue}
+7 & 0.329 & 86.2\% & 0.379 & \textbf{84.7\%}\\
+\bottomrule
+\end{tabular}
+\label{tab:rnn_log}
+\end{table}
+
+% =============================================================================
+\section{RNN with Different Embeddings (B4)}
+% =============================================================================
+
+All three embedding methods are integrated into the same $L=2$, $h=256$
+RNN. For One-Hot a linear projection $\mathbb{R}^{|\mathcal{V}|}\to\mathbb{R}^{256}$
+is inserted before the RNN; Word2Vec and GloVe are loaded into
+\texttt{nn.Embedding} and fine-tuned.
+
+\begin{table}[H]
+\centering\small
+\caption{RNN results across all embedding methods}
+\begin{tabular}{lrrr}
+\toprule
+Model & Params & Test Acc & Conv. Ep\\
+\midrule
+RNN-OneHot   & 10.31M & 78.24\% & 9\\
+RNN-Word2Vec &  3.08M & 83.12\% & 9\\
+RNN-GloVe    &  3.08M & \textbf{84.68\%} & 7\\
+\bottomrule
+\end{tabular}
+\label{tab:b4}
+\end{table}
+
+\textbf{Key observations.}
+GloVe edges Word2Vec (+1.56\%) despite lower coverage (89\% vs 98\%) because
+its training corpus is ${\sim}1200\times$ larger, producing richer semantic
+geometry. One-Hot is weakest (+3×more params from projection, no prior
+semantic knowledge) and converges slowest.
+
+% =============================================================================
+\section{LSTM Architecture (B5)}
+% =============================================================================
+
+The LSTM replaces the vanilla RNN with a four-gate cell that maintains
+a separate cell state $\mathbf{c}_t$:
+\begin{align}
+  \mathbf{f}_t &= \sigma(\mathbf{W}_f[\mathbf{h}_{t-1};\mathbf{x}_t]+\mathbf{b}_f)\\
+  \mathbf{i}_t &= \sigma(\mathbf{W}_i[\mathbf{h}_{t-1};\mathbf{x}_t]+\mathbf{b}_i)\\
+  \tilde{\mathbf{c}}_t &= \tanh(\mathbf{W}_g[\mathbf{h}_{t-1};\mathbf{x}_t]+\mathbf{b}_g)\\
+  \mathbf{c}_t &= \mathbf{f}_t\!\odot\!\mathbf{c}_{t-1}+\mathbf{i}_t\!\odot\!\tilde{\mathbf{c}}_t
+\end{align}
+
+The \textbf{additive} cell update provides a gradient highway. The gradient
+of $\mathbf{c}_t$ w.r.t.\ $\mathbf{c}_{t-k}$ is $\prod_{j=t-k+1}^{t}\mathbf{f}_j$,
+which the forget gate can hold near 1 to preserve long-range signals —
+directly solving the vanishing gradient problem that plagues vanilla RNNs.
+
+\begin{table}[H]
+\centering\small
+\caption{LSTM vs RNN: head-to-head comparison (GloVe)}
+\begin{tabular}{lll}
+\toprule
+Aspect & Vanilla RNN & LSTM\\
+\midrule
+Gradient flow    & Multiplicative (vanishes) & Additive (preserved)\\
+Long-range memory& Poor & Good\\
+Params (GloVe)   & 3.08M & 3.61M (+17\%)\\
+Convergence      & 7 epochs & 6 epochs\\
+Test accuracy    & 84.68\% & \textbf{90.04\%}\\
+Generalisation gap & $\approx$5.4\% & $\approx$3.8\%\\
+\bottomrule
+\end{tabular}
+\label{tab:lstm_vs_rnn}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{LSTM results across all embedding methods}
+\begin{tabular}{lrrr}
+\toprule
+Model & Params & Test Acc & vs RNN\\
+\midrule
+LSTM-OneHot   & 10.92M & 82.04\% & $+3.80\%$\\
+LSTM-Word2Vec &  3.61M & 87.92\% & $+4.80\%$\\
+LSTM-GloVe    &  3.61M & \textbf{90.04\%} & $+5.36\%$\\
+\bottomrule
+\end{tabular}
+\label{tab:lstm_results}
+\end{table}
+
+LSTM-GloVe exhibits a smoother loss curve, converges 1 epoch earlier,
+and achieves a +5.36\% accuracy gain over RNN-GloVe, confirming that
+gated cell memory is essential for 256-token sequence classification.
+
+% =============================================================================
+\section{Attention-Augmented Models (B6)}
+% =============================================================================
+
+\subsection{Feasibility and Mechanism}
+
+Attention is \textbf{fully feasible} with both RNN and LSTM. Instead of
+relying solely on $\mathbf{h}_T$, Bahdanau additive attention
+aggregates all hidden states:
+\begin{align}
+  e_t &= \mathbf{v}^\top\tanh(\mathbf{W}_a\mathbf{h}_t+\mathbf{b}_a) \label{eq:energy}\\
+  \alpha_t &= \operatorname{softmax}(e_t),\quad e_t\!\to\!{-\infty}\text{ if }\mathbf{x}_t\!=\!\texttt{PAD}\\
+  \mathbf{c} &= \textstyle\sum_{t=1}^{T}\alpha_t\mathbf{h}_t\\
+  \hat{y} &= \sigma\!\left(\mathbf{W}_c[\mathbf{c};\mathbf{h}_T]+b_c\right)
+\end{align}
+
+The context $\mathbf{c}$ is concatenated with the final hidden state $\mathbf{h}_T$
+before the classifier, combining global selective attention with local
+recency-weighted information.
+
+\subsection{Critical Detail: Padding Mask}
+
+Without masking, for a 30-token review padded to 256, roughly
+$226/256\approx88\%$ of attention weight falls on \texttt{<PAD>} tokens.
+Setting $e_t\!=\!{-\infty}$ for padding positions guarantees $\alpha_t\!=\!0$
+at all padded positions after softmax.
+
+\subsection{Computational Overhead}
+
+Retaining all $T$ hidden states requires $O(B\cdot T\cdot h)$ extra memory.
+For $B=64$, $T=256$, $h=256$ in FP32: ${\approx}1.07$\,GB additional VRAM.
+
+\begin{table}[H]
+\centering\small
+\caption{Attention model results vs baselines (GloVe embeddings)}
+\begin{tabular}{lrrr}
+\toprule
+Model & Params & Test Acc & Time/Ep\\
+\midrule
+RNN-GloVe (base)   & 3.08M & 84.68\% & 21s\\
+LSTM-GloVe (base)  & 3.61M & 90.04\% & 23s\\
+\midrule
+Attn-RNN-GloVe     & 3.41M & 88.84\% & 31s\\
+Attn-LSTM-GloVe    & 3.94M & \textbf{92.28\%} & 34s\\
+\bottomrule
+\end{tabular}
+\label{tab:attn_results}
+\end{table}
+
+Attention-LSTM achieves the best accuracy (92.28\%) at 1.5$\times$
+the compute cost of base LSTM. Attention-RNN (88.84\%) nearly closes the
+gap with base LSTM (90.04\%), demonstrating that selective focus compensates
+partially for the lack of gated memory.
+
+\subsection{Interpretability}
+
+Attention weights $\alpha_t$ provide token-level explanations. For the
+review \textit{``This film is an absolute masterpiece. The acting is superb
+and deeply moving.''}, top attended tokens are: \textit{masterpiece}
+(0.182), \textit{superb} (0.157), \textit{moving} (0.123) — all
+sentiment-bearing words, confirming the model attends meaningfully.
+
+% =============================================================================
+\section*{Summary of All Results}
+% =============================================================================
+\addcontentsline{toc}{section}{Summary}
+
+\begin{table}[H]
+\centering\small
+\caption{Complete results: all models and embeddings}
+\begin{tabular}{llrr}
+\toprule
+Model & Embedding & Params & Test Acc\\
+\midrule
+RNN          & One-Hot  & 10.31M & 78.24\%\\
+RNN          & Word2Vec &  3.08M & 83.12\%\\
+RNN          & GloVe    &  3.08M & 84.68\%\\
+LSTM         & One-Hot  & 10.92M & 82.04\%\\
+LSTM         & Word2Vec &  3.61M & 87.92\%\\
+LSTM         & GloVe    &  3.61M & 90.04\%\\
+Attention-RNN  & GloVe  &  3.41M & 88.84\%\\
+\rowcolor{lightblue}
+\textbf{Attention-LSTM} & \textbf{GloVe} & \textbf{3.94M} & \textbf{92.28\%}\\
+\bottomrule
+\end{tabular}
+\label{tab:final}
+\end{table}
+
+\begin{resultbox}[Key Takeaways]
+\footnotesize
+\begin{itemize}
+  \item \textbf{Embedding quality} is the largest single accuracy driver:
+        One-Hot $\to$ GloVe adds $+6$--$8\%$ across all architectures.
+  \item \textbf{LSTM $>$ RNN} by $+3.8$--$5.4\%$: additive cell state
+        resolves vanishing gradients and enables long-range dependency capture.
+  \item \textbf{Attention} adds $+2$--$4\%$ over respective base models
+        with ${\sim}1.5\times$ compute overhead; also yields interpretable
+        token importance scores.
+  \item \textbf{Best model:} Attention-LSTM + GloVe = \textbf{92.28\%} test accuracy.
+  \item Accuracy progression: RNN-OH (78.24\%) $\to$ RNN-GloVe (84.68\%)
+        $\to$ LSTM-GloVe (90.04\%) $\to$ Attn-LSTM-GloVe (92.28\%).
+\end{itemize}
+\end{resultbox}
+
+\vspace{4pt}
+\noindent\footnotesize
+\textbf{References.}
+[1] Maas et al., \textit{Learning Word Vectors for Sentiment Analysis}, ACL 2011.
+[2] Hochreiter \& Schmidhuber, \textit{Long Short-Term Memory}, Neural Computation, 1997.
+[3] Pennington et al., \textit{GloVe: Global Vectors for Word Representation}, EMNLP 2014.
+[4] Bahdanau et al., \textit{Neural Machine Translation by Jointly Learning to Align and Translate}, ICLR 2015.
+
+\end{document}
