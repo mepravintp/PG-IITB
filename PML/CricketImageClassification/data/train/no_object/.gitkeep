@@ -1,0 +1,12 @@
+# Place no_object images here
+
+## Instructions
+1. Download cricket images containing no_objects
+2. Ensure images have resolution >= 800x600 pixels
+3. Supported formats: .jpg, .jpeg, .png, .bmp, .tiff
+
+## Naming Convention
+Use descriptive filenames, e.g.:
+- ball_ground_01.jpg
+- ball_in_air_02.jpg
+- ball_hand_03.jpg
